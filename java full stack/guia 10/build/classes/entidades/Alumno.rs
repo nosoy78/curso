@@ -1,0 +1,2 @@
+alumno.Alumno
+entidades.NewMain
