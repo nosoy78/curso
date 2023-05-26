@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class CodigosPostales {
+public class Guia10Ejercicio4Extra {
     public static void main(String[] args) {
         Map<String, String> codigosPostales = new HashMap<>();
         Scanner scanner = new Scanner(System.in);
