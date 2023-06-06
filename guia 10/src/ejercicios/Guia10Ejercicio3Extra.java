@@ -1,73 +1,141 @@
-package ejercicios;
-
-import entidades.libreria;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
+class Libro {
+    private String titulo;
+    private String autor;
+    private int numEjemplares;
+    private int numEjemplaresPrestados;
 
-public class Guia10Ejercicio3Extra {
-
-    public static void main(String[] args) {
-        serviciolibreria libreria = new serviciolibreria();
-        Scanner scanner = new Scanner(System.in);
-        boolean crearLibro = true;
-
-        while (crearLibro) {
-            System.out.println("----- Creación de Libro -----");
-            System.out.print("Ingresa el título del libro: ");
-            String titulo = scanner.nextLine();
-            System.out.print("Ingresa el autor del libro: ");
-            String autor = scanner.nextLine();
-            System.out.print("Ingresa el número de ejemplares: ");
-            int ejemplares = scanner.nextInt();
-            scanner.nextLine(); // Consumir el salto de línea
-
-            Libro libro = new Libro(titulo, autor, ejemplares);
-            libreria.agregarLibro(libro);
-
-            System.out.print("¿Deseas crear otro libro? (s/n): ");
-            String opcion = scanner.nextLine();
-            if (!opcion.equalsIgnoreCase("s")) {
-                crearLibro = false;
-            }
-        }
-
-        boolean salir = false;
-        while (!salir) {
-            System.out.println("----- Menú -----");
-            System.out.println("1. Realizar préstamo de un libro");
-            System.out.println("2. Realizar devolución de un libro");
-            System.out.println("3. Mostrar todos los libros");
-            System.out.println("4. Salir del programa");
-            System.out.print("Ingresa tu opción: ");
-            int opcion = scanner.nextInt();
-            scanner.nextLine(); // Consumir el salto de línea
-
-            switch (opcion) {
-                case 1:
-                    System.out.print("Ingresa el título del libro a prestar: ");
-                    String tituloPrestamo = scanner.nextLine();
-                    libreria.prestamo(tituloPrestamo);
-                    break;
-                case 2:
-                    System.out.print("Ingresa el título del libro a devolver: ");
-                    String tituloDevolucion = scanner.nextLine();
-                    libreria.devolucion(tituloDevolucion);
-                    break;
-                case 3:
-                    libreria.mostrarLibros();
-                    break;
-                case 4:
-                    salir = true;
-                    break;
-                default:
-                    System.out.println("Opción inválida. Ingresa un número del 1 al 4.");
-                    break;
-            }
-        }
+    public Libro(String titulo, String autor, int numEjemplares) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.numEjemplares = numEjemplares;
     }
 
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getAutor() {
+        return autor;
+    }
+
+    public int getNumEjemplares() {
+        return numEjemplares;
+    }
+
+    public int getNumEjemplaresPrestados() {
+        return numEjemplaresPrestados;
+    }
+
+    public boolean prestamo() {
+        if (numEjemplares - numEjemplaresPrestados > 0) {
+            numEjemplaresPrestados++;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean devolucion() {
+        if (numEjemplaresPrestados > 0) {
+            numEjemplaresPrestados--;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Libro: " + titulo +
+                ", Autor: " + autor +
+                ", Ejemplares: " + numEjemplares +
+                ", Ejemplares prestados: " + numEjemplaresPrestados;
+    }
 }
-/**
- * 
- */
+
+class Libreria {
+    private Set<Libro> libros;
+
+    public Libreria() {
+        libros = new HashSet<>();
+    }
+
+    public void agregarLibro(Libro libro) {
+        libros.add(libro);
+    }
+
+    public boolean prestamo(String titulo) {
+        for (Libro libro : libros) {
+            if (libro.getTitulo().equalsIgnoreCase(titulo)) {
+                return libro.prestamo();
+            }
+        }
+        return false;
+    }
+
+    public boolean devolucion(String titulo) {
+        for (Libro libro : libros) {
+            if (libro.getTitulo().equalsIgnoreCase(titulo)) {
+                return libro.devolucion();
+            }
+        }
+        return false;
+    }
+
+    public void mostrarLibros() {
+        for (Libro libro : libros) {
+            System.out.println(libro);
+        }
+    }
+}
+
+public class Guia10Ejercicio3Extra {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Libreria libreria = new Libreria();
+
+        boolean agregarLibro = true;
+        while (agregarLibro) {
+            System.out.print("Ingrese el título del libro: ");
+            String titulo = scanner.nextLine();
+            System.out.print("Ingrese el autor del libro: ");
+            String autor = scanner.nextLine();
+            System.out.print("Ingrese el número de ejemplares del libro: ");
+            int numEjemplares = Integer.parseInt(scanner.nextLine());
+
+            Libro libro = new Libro(titulo, autor, numEjemplares);
+            libreria.agregarLibro(libro);
+
+            System.out.print("¿Desea agregar otro libro? (S/N): ");
+            String opcion = scanner.nextLine();
+            agregarLibro = opcion.equalsIgnoreCase("S");
+        }
+
+        System.out.println("----- Libros agregados -----");
+        libreria.mostrarLibros();
+
+        System.out.print("Ingrese el título del libro a prestar: ");
+        String tituloPrestamo = scanner.nextLine();
+        boolean prestamoRealizado = libreria.prestamo(tituloPrestamo);
+        if (prestamoRealizado) {
+            System.out.println("Se ha realizado el préstamo del libro: " + tituloPrestamo);
+        } else {
+            System.out.println("No se puede realizar el préstamo del libro: " + tituloPrestamo);
+        }
+
+        System.out.print("Ingrese el título del libro a devolver: ");
+        String tituloDevolucion = scanner.nextLine();
+        boolean devolucionRealizada = libreria.devolucion(tituloDevolucion);
+        if (devolucionRealizada) {
+            System.out.println("Se ha realizado la devolución del libro: " + tituloDevolucion);
+        } else {
+            System.out.println("No se puede realizar la devolución del libro: " + tituloDevolucion);
+        }
+
+        System.out.println("----- Libros actualizados -----");
+        libreria.mostrarLibros();
+    }
+}
+
